@@ -3,190 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENVYGO | Studio Edition</title>
+    <title>ZENVYGO | Elite Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;900&family=Outfit:wght@100;400;900&display=swap');
-        
-        body { 
-            background-color: #000000; 
-            color: #ffffff; 
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .studio-title { font-family: 'Cinzel', serif; }
-        
-        .bg-text-ghost {
-            position: fixed;
-            font-size: 25vw;
-            font-weight: 900;
-            color: rgba(255,255,255,0.02);
-            z-index: -1;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        .image-container {
-            position: relative;
-            transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-        }
-
-        .image-container:hover {
-            transform: scale(1.02);
-        }
-
-        .buy-btn {
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: all 0.4s ease;
-        }
-
-        .buy-btn:hover {
-            background: white;
-            color: black;
-            letter-spacing: 5px;
-        }
-
-        /* Custom Asymmetric Grid for more creativity */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 100px 40px;
-        }
-
-        .odd-item { margin-top: 60px; }
-
-        .nav-link {
-            font-size: 10px;
-            letter-spacing: 4px;
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 1px;
-            bottom: -5px;
-            left: 0;
-            background: white;
-            transition: 0.3s;
-        }
-
-        .nav-link:hover::after { width: 100%; }
-
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;900&display=swap');
+        body { background: #000; color: #fff; font-family: 'Outfit', sans-serif; }
         .logo-bright { filter: invert(1) brightness(1.5); }
+        .product-card:hover img { transform: scale(1.05); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
-    <div class="bg-text-ghost studio-title">ZENVYGO</div>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        const products = [
+            { id: 1, name: "Noir Essence", price: "4200", desc: "A deep, mysterious fragrance for the modern visionary. Long-lasting luxury blend.", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
+            { id: 2, name: "Chrome Sport", price: "3500", desc: "Fresh, energetic and bold. Perfect for your active daily lifestyle.", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800" },
+            { id: 3, name: "Velvet Oud", price: "5800", desc: "Rich royal oud extract. The pinnacle of oriental luxury craftsmanship.", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800" }
+        ];
+
         function App() {
-            const [view, setView] = useState('home');
+            const [page, setPage] = useState('home');
+            const [selectedProduct, setSelectedProduct] = useState(null);
             const [orders, setOrders] = useState([]);
+            const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
 
             useEffect(() => {
                 const saved = JSON.parse(localStorage.getItem('zenvygo_orders') || '[]');
                 setOrders(saved);
             }, []);
 
-            const products = [
-                { id: 1, name: "Noir Essence", price: "4,200", info: "Cold-pressed luxury", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
-                { id: 2, name: "Chrome Sport", price: "3,500", info: "Limitless energy", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800" },
-                { id: 3, name: "Velvet Oud", price: "5,800", info: "Rare wood blend", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800" },
-                { id: 4, name: "Aqua Marine", price: "2,900", info: "Oceanic breeze", img: "https://images.unsplash.com/photo-1585232004423-244e0e6904e3?w=800" }
-            ];
+            const openDetails = (p) => { setSelectedProduct(p); setPage('details'); window.scrollTo(0,0); };
 
-            const placeOrder = (product) => {
-                const newOrder = { id: '#' + Math.floor(10000 + Math.random()*90000), name: product.name, price: product.price, date: new Date().toLocaleString() };
+            const handleOrder = (e) => {
+                e.preventDefault();
+                const newOrder = { 
+                    id: '#' + Math.floor(Math.random()*90000), 
+                    ...customer, 
+                    product: selectedProduct.name, 
+                    price: selectedProduct.price,
+                    date: new Date().toLocaleString() 
+                };
                 const updated = [newOrder, ...orders];
                 setOrders(updated);
                 localStorage.setItem('zenvygo_orders', JSON.stringify(updated));
-                alert("CONCIERGE ALERT: Order logged for " + product.name);
+                alert("ORDER SUCCESSFUL! WE WILL CALL YOU SOON.");
+                setPage('home');
             };
 
             return (
-                <div className="pb-20">
+                <div className="min-h-screen">
                     {/* Header */}
-                    <nav className="p-8 flex justify-between items-center fixed w-full top-0 z-50 mix-blend-difference">
-                        <div onClick={() => setView('home')} className="flex items-center gap-4 cursor-pointer">
-                            <img src="logo.png" className="h-8 logo-bright" alt="Logo" />
-                            <span className="studio-title text-xl font-black tracking-tighter">ZENVYGO</span>
+                    <nav className="p-6 flex justify-between items-center sticky top-0 bg-black/90 z-50 border-b border-white/5">
+                        <div onClick={() => setPage('home')} className="flex items-center gap-3 cursor-pointer">
+                            <img src="logo.png" className="h-7 logo-bright" />
+                            <span className="font-black tracking-tighter text-xl italic">ZENVYGO</span>
                         </div>
-                        <button onClick={() => setView('admin')} className="nav-link uppercase">Admin Panel</button>
+                        <button onClick={() => setPage('admin')} className="text-[10px] tracking-widest opacity-40 hover:opacity-100">DASHBOARD</button>
                     </nav>
 
-                    {view === 'admin' ? (
-                        <div className="pt-40 px-8 max-w-5xl mx-auto min-h-screen">
-                            <h2 className="studio-title text-6xl mb-16 opacity-10 uppercase">Registry</h2>
-                            <div className="grid gap-6">
-                                {orders.map(o => (
-                                    <div key={o.id} className="border-b border-white/10 pb-6 flex justify-between items-end">
-                                        <div>
-                                            <p className="text-[10px] text-gray-500">{o.id}</p>
-                                            <h3 className="text-2xl font-light uppercase tracking-widest">{o.name}</h3>
+                    {page === 'home' && (
+                        <div className="p-8">
+                            <h1 className="text-5xl font-black mb-12 text-center py-20 tracking-tighter italic uppercase">Elite Collection</h1>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+                                {products.map(p => (
+                                    <div key={p.id} className="product-card cursor-pointer group" onClick={() => openDetails(p)}>
+                                        <div className="overflow-hidden bg-[#111] aspect-[3/4] mb-4 border border-white/5">
+                                            <img src={p.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700" />
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-xl font-bold italic">৳{o.price}</p>
-                                            <p className="text-[9px] opacity-30">{o.date}</p>
-                                        </div>
+                                        <h3 className="font-bold uppercase tracking-widest text-sm">{p.name}</h3>
+                                        <p className="opacity-50 text-xs mt-1">BDT {p.price}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    ) : (
-                        <div>
-                            {/* Hero Section */}
-                            <header className="h-screen flex flex-col justify-center px-8 md:px-24">
-                                <p className="text-[10px] tracking-[0.8em] text-gray-400 mb-6 uppercase">Modernity • Luxury • Pure</p>
-                                <h1 className="studio-title text-7xl md:text-[14vw] font-black leading-none mb-10">ZENVYGO</h1>
-                                <div className="flex flex-col md:flex-row gap-10 items-start md:items-center">
-                                    <p className="max-w-xs text-[10px] leading-relaxed tracking-widest uppercase opacity-40">A new era of lifestyle curated for the fast-paced visionary.</p>
-                                    <div className="h-[1px] w-20 bg-white/20 hidden md:block"></div>
-                                    <p className="text-[10px] font-bold">EST. 2024</p>
-                                </div>
-                            </header>
+                    )}
 
-                            {/* Products Grid */}
-                            <section className="px-8 md:px-24 py-20">
-                                <div className="product-grid">
-                                    {products.map((p, idx) => (
-                                        <div key={p.id} className={`image-container ${idx % 2 !== 0 ? 'odd-item' : ''}`}>
-                                            <div className="relative group overflow-hidden bg-[#111]">
-                                                <img src={p.img} alt={p.name} className="w-full aspect-[4/5] object-cover opacity-80 group-hover:opacity-100 transition duration-1000 group-hover:scale-110" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-8">
-                                                    <p className="text-[10px] tracking-widest mb-2 italic opacity-60">{p.info}</p>
-                                                    <button onClick={() => placeOrder(p)} className="buy-btn py-4 text-[9px] font-bold tracking-[0.3em] uppercase">Add To Collection</button>
-                                                </div>
-                                            </div>
-                                            <div className="mt-6 flex justify-between items-center">
-                                                <h3 className="studio-title text-lg uppercase tracking-tighter">{p.name}</h3>
-                                                <span className="text-sm font-light opacity-50">৳{p.price}</span>
-                                            </div>
-                                        </div>
-                                    ))}
+                    {page === 'details' && (
+                        <div className="p-8 max-w-5xl mx-auto pt-20">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <img src={selectedProduct.img} className="w-full border border-white/10" />
+                                <div>
+                                    <h2 className="text-4xl font-black uppercase mb-4">{selectedProduct.name}</h2>
+                                    <p className="text-2xl mb-6 italic text-gray-400">BDT {selectedProduct.price}</p>
+                                    <p className="text-gray-500 mb-10 leading-relaxed uppercase text-xs tracking-widest">{selectedProduct.desc}</p>
+                                    
+                                    <form onSubmit={handleOrder} className="space-y-4 glass p-6 rounded-sm">
+                                        <p className="text-[10px] tracking-[0.3em] font-bold mb-4">DELIVERY DETAILS</p>
+                                        <input required placeholder="YOUR NAME" className="w-full bg-white/5 border border-white/10 p-3 text-xs outline-none focus:border-white" 
+                                            onChange={e => setCustomer({...customer, name: e.target.value})} />
+                                        <input required placeholder="PHONE NUMBER" className="w-full bg-white/5 border border-white/10 p-3 text-xs outline-none focus:border-white" 
+                                            onChange={e => setCustomer({...customer, phone: e.target.value})} />
+                                        <textarea required placeholder="FULL ADDRESS" className="w-full bg-white/5 border border-white/10 p-3 text-xs outline-none focus:border-white h-24" 
+                                            onChange={e => setCustomer({...customer, address: e.target.value})}></textarea>
+                                        <button className="w-full bg-white text-black py-4 font-black uppercase tracking-widest text-xs hover:bg-gray-200">Confirm Order</button>
+                                    </form>
                                 </div>
-                            </section>
-
-                            {/* Creative Footer */}
-                            <footer className="mt-40 p-24 text-center border-t border-white/5 bg-white/[0.01]">
-                                <div className="studio-title text-4xl md:text-8xl opacity-5 mb-10">THE FUTURE IS ZENVYGO</div>
-                                <p className="text-[10px] tracking-[1em] opacity-20 uppercase font-black">All Rights Secured</p>
-                            </footer>
+                            </div>
                         </div>
                     )}
+
+                    {page === 'admin' && (
+                        <div className="p-10 max-w-4xl mx-auto">
+                            <h2 className="text-4xl font-black mb-10 italic">ORDERS_LOG</h2>
+                            {orders.map(o => (
+                                <div key={o.id} className="p-6 border border-white/10 mb-4 glass">
+                                    <div className="flex justify-between font-bold mb-4 border-b border-white/5 pb-2">
+                                        <span>{o.product}</span>
+                                        <span>{o.price} BDT</span>
+                                    </div>
+                                    <p className="text-xs text-gray-400">CUSTOMER: {o.name}</p>
+                                    <p className="text-xs text-gray-400">PHONE: {o.phone}</p>
+                                    <p className="text-xs text-gray-400">ADDRESS: {o.address}</p>
+                                    <p className="text-[9px] mt-4 opacity-20">{o.date}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Footer / Social / Address */}
+                    <footer className="mt-40 p-12 border-t border-white/5 bg-[#050505] text-center">
+                        <div className="flex justify-center gap-8 mb-8 text-xl">
+                            <a href="www.facebook.com/zenvygo" target="_blank"><i className="fab fa-facebook-f opacity-50 hover:opacity-100 transition"></i></a>
+                            <a href="www.instagram.com/zenvygo" target="_blank"><i className="fab fa-instagram opacity-50 hover:opacity-100 transition"></i></a>
+                            <a href="mailto:contact@zenvygo.com"><i className="far fa-envelope opacity-50 hover:opacity-100 transition"></i></a>
+                        </div>
+                        <p className="text-[10px] tracking-[0.4em] text-gray-600 uppercase mb-2">House 1353/2, Paterbag, Dania, Kadomtoli, Dhaka, Bangladesh</p>
+                        <p className="text-[10px] tracking-[0.4em] text-gray-600 uppercase">+880 1618 479130</p>
+                        <p className="mt-10 text-[8px] opacity-20">© 2026 ZENVYGO STUDIO. ALL RIGHTS RESERVED.</p>
+                    </footer>
+
+                    {/* Floating Chat Buttons */}
+                    <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-[100]">
+                        <a href="https://wa.me/+8801618479130" target="_blank" className="bg-[#25D366] w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg hover:scale-110 transition">
+                            <i className="fab fa-whatsapp text-white"></i>
+                        </a>
+                        <a href="https://m.me/www.facebook.com/zenvygo" target="_blank" className="bg-[#0084FF] w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-lg hover:scale-110 transition">
+                            <i className="fab fa-facebook-messenger text-white"></i>
+                        </a>
+                    </div>
                 </div>
             );
         }
