@@ -3,86 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenvygo | Shop Smart, Live Fast</title>
+    <title>Zenvygo | Luxury Redefined</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .logo-bright { filter: invert(1) brightness(2); } /* এই লাইনটি লোগো সাদা করবে */
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Plus+Jakarta+Sans:wght@200;400;700&display=swap');
+        
+        body { 
+            background-color: #050505; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .hero-title {
+            font-family: 'Syncopate', sans-serif;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+        }
+
+        .logo-bright { filter: invert(1) brightness(2); }
+        
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .product-card {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .buy-btn {
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+            letter-spacing: 0.2em;
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-white">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
-        function App() {
-            const [view, setView] = React.useState('home');
-            const [orders, setOrders] = React.useState([]);
+        const { useState, useEffect } = React;
 
-            React.useEffect(() => {
+        function App() {
+            const [view, setView] = useState('home');
+            const [orders, setOrders] = useState([]);
+
+            useEffect(() => {
                 const saved = JSON.parse(localStorage.getItem('zenvygo_orders') || '[]');
                 setOrders(saved);
             }, []);
 
             const products = [
-                { id: 1, name: "Signature Fragrance 01", price: "3200", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
-                { id: 2, name: "Luxury Black Edition", price: "4500", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800" },
-                { id: 3, name: "Elite Mist", price: "2800", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800" }
+                { id: 1, name: "Noir Essence", price: "4,200", category: "PRIVATE BLEND", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
+                { id: 2, name: "Chrome Sport", price: "3,500", category: "SIGNATURE", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800" },
+                { id: 3, name: "Velvet Oud", price: "5,800", category: "ROYAL SERIES", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800" },
+                { id: 4, name: "Aqua Marine", price: "2,900", category: "FRESH", img: "https://images.unsplash.com/photo-1585232004423-244e0e6904e3?w=800" }
             ];
 
             const placeOrder = (product) => {
-                const newOrder = { id: '#' + Math.floor(Math.random()*90000), name: product.name, price: product.price, date: new Date().toLocaleString() };
+                const newOrder = { id: '#' + Math.floor(10000 + Math.random()*90000), name: product.name, price: product.price, date: new Date().toLocaleString() };
                 const updated = [newOrder, ...orders];
                 setOrders(updated);
                 localStorage.setItem('zenvygo_orders', JSON.stringify(updated));
-                alert("Order Confirmed!");
-                setView('home');
+                alert("ORDER CONFIRMED. OUR CONCIERGE WILL CONTACT YOU.");
             };
 
             return (
-                <div className="min-h-screen">
-                    {/* Navbar */}
-                    <nav className="p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-md z-50">
-                        <div onClick={() => setView('home')} className="cursor-pointer flex items-center gap-2">
-                            <img src="logo.png" alt="ZENVYGO" className="h-10 logo-bright" />
+                <div className="animate__animated animate__fadeIn">
+                    <nav className="fixed w-full z-[100] glass-nav px-6 py-4 flex justify-between items-center">
+                        <div onClick={() => setView('home')} className="flex items-center gap-3 cursor-pointer group">
+                            <img src="logo.png" className="h-7 logo-bright group-hover:scale-110 transition" alt="Logo" />
+                            <span className="hero-title text-sm font-bold tracking-tighter">ZENVYGO</span>
                         </div>
-                        <button onClick={() => setView('admin')} className="text-[9px] tracking-widest border border-white/20 px-3 py-1 uppercase">Admin</button>
+                        <div className="flex gap-6 items-center">
+                            <button onClick={() => setView('admin')} className="text-[10px] tracking-[0.3em] opacity-40 hover:opacity-100 transition">ADMIN ACCESS</button>
+                        </div>
                     </nav>
 
                     {view === 'admin' ? (
-                        <div className="p-10 max-w-5xl mx-auto">
-                            <h2 className="text-4xl font-black mb-10 italic">ORDERS</h2>
+                        <div className="pt-32 p-6 max-w-4xl mx-auto min-h-screen">
+                            <h2 className="hero-title text-4xl mb-12">DATABASE_ORDERS</h2>
                             <div className="space-y-4">
-                                {orders.length === 0 ? <p className="opacity-30">No orders yet.</p> : 
-                                    orders.map(o => (
-                                        <div key={o.id} className="p-4 border border-white/10 flex justify-between">
-                                            <div><p className="font-bold">{o.name}</p><p className="text-xs text-gray-500">{o.date}</p></div>
-                                            <p className="font-bold">{o.price} BDT</p>
+                                {orders.map(o => (
+                                    <div key={o.id} className="p-6 border border-white/5 bg-white/[0.02] flex justify-between items-center">
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 mb-1">{o.id}</p>
+                                            <p className="font-bold tracking-wide">{o.name}</p>
+                                            <p className="text-[10px] opacity-40">{o.date}</p>
                                         </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-                    ) : (
-                        <div>
-                            <div className="py-20 text-center">
-                                <h2 className="text-6xl md:text-9xl font-black italic tracking-tighter mb-4">ZENVYGO</h2>
-                                <p className="text-gray-500 uppercase tracking-[0.4em] text-xs">shop smart, live fast</p>
-                            </div>
-                            <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-10">
-                                {products.map(p => (
-                                    <div key={p.id}>
-                                        <img src={p.img} className="w-full grayscale hover:grayscale-0 transition duration-700 mb-4" />
-                                        <h3 className="font-bold uppercase text-sm tracking-widest">{p.name}</h3>
-                                        <p className="text-gray-500 text-xs mb-4">BDT {p.price}</p>
-                                        <button onClick={() => placeOrder(p)} className="w-full bg-white text-black py-3 font-black uppercase text-[10px] tracking-widest hover:invert">Confirm Order</button>
+                                        <p className="font-bold text-sm underline decoration-white/20">{o.price} BDT</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
+                    ) : (
+                        <main>
+                            {/* Hero Section */}
+                            <section className="h-screen flex flex-col justify-center items-center px-6 text-center border-b border-white/5">
+                                <span className="text-[10px] tracking-[0.6em] text-gray-500 mb-8 animate__animated animate__fadeInDown">EST. 2024</span>
+                                <h1 className="hero-title text-7xl md:text-[12rem] font-bold mb-8 animate__animated animate__fadeIn">ZENVYGO</h1>
+                                <p className="max-w-md text-xs leading-relaxed text-gray-400 uppercase tracking-widest opacity-60">Crafting the essence of modern luxury for those who live fast and shop smart.</p>
+                                <div className="mt-12 animate__bounce animate__animated animate__infinite animate__slow">
+                                    <div className="w-[1px] h-20 bg-gradient-to-b from-white to-transparent mx-auto"></div>
+                                </div>
+                            </section>
+
+                            {/* Collections */}
+                            <section className="py-32 px-6 max-w-7xl mx-auto">
+                                <div className="flex justify-between items-end mb-20">
+                                    <div>
+                                        <p className="text-[10px] tracking-widest text-gray-500 mb-2 uppercase">Current</p>
+                                        <h2 className="hero-title text-4xl uppercase">Collections</h2>
+                                    </div>
+                                    <p className="text-[10px] opacity-40">SCROLL TO EXPLORE</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+                                    {products.map(p => (
+                                        <div key={p.id} className="product-card group">
+                                            <div className="product-image-container aspect-[3/4] mb-6">
+                                                <img src={p.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition duration-[1.5s]" />
+                                                <div className="absolute top-4 left-4">
+                                                    <span className="bg-black/80 backdrop-blur text-[8px] px-2 py-1 tracking-widest border border-white/10 uppercase font-bold">{p.category}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h3 className="font-bold text-sm tracking-wide mb-1 uppercase">{p.name}</h3>
+                                                    <p className="text-[10px] text-gray-500">EXCLUSIVE EDITION</p>
+                                                </div>
+                                                <p className="text-sm font-light italic">৳{p.price}</p>
+                                            </div>
+                                            <button onClick={() => placeOrder(p)} className="buy-btn w-full bg-white text-black py-4 text-[10px] font-black uppercase tracking-[0.2em]">Secure Item</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <footer className="py-32 border-t border-white/5 text-center">
+                                <h2 className="hero-title text-2xl mb-8 opacity-20">ZENVYGO</h2>
+                                <p className="text-[9px] tracking-[0.4em] text-gray-600 uppercase">Designed for the Global Elite</p>
+                            </footer>
+                        </main>
                     )}
                 </div>
             );
