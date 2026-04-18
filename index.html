@@ -9,9 +9,9 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        .text-outline { -webkit-text-stroke: 1px white; color: transparent; }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .logo-bright { filter: invert(1) brightness(2); } /* এই লাইনটি লোগো সাদা করবে */
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-white">
@@ -20,32 +20,25 @@
     <script type="text/babel">
         function App() {
             const [view, setView] = React.useState('home');
-            const [selectedProduct, setSelectedProduct] = React.useState(null);
             const [orders, setOrders] = React.useState([]);
 
-            // ব্রাউজার থেকে আগের অর্ডার লোড করা
             React.useEffect(() => {
                 const saved = JSON.parse(localStorage.getItem('zenvygo_orders') || '[]');
                 setOrders(saved);
             }, []);
 
             const products = [
-                { id: 1, name: "Signature Fragrance 01", price: "3200", desc: "Elite scent for the modern lifestyle.", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
-                { id: 2, name: "Luxury Black Edition", price: "4500", desc: "Deep notes for exclusive nights.", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800" },
-                { id: 3, name: "Elite Mist", price: "2800", desc: "Fresh energy in every spray.", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800" }
+                { id: 1, name: "Signature Fragrance 01", price: "3200", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
+                { id: 2, name: "Luxury Black Edition", price: "4500", img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800" },
+                { id: 3, name: "Elite Mist", price: "2800", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800" }
             ];
 
             const placeOrder = (product) => {
-                const newOrder = {
-                    id: '#' + Math.floor(Math.random()*90000),
-                    name: product.name,
-                    price: product.price,
-                    date: new Date().toLocaleString()
-                };
+                const newOrder = { id: '#' + Math.floor(Math.random()*90000), name: product.name, price: product.price, date: new Date().toLocaleString() };
                 const updated = [newOrder, ...orders];
                 setOrders(updated);
                 localStorage.setItem('zenvygo_orders', JSON.stringify(updated));
-                alert("Order Confirmed! Zenvygo team will contact you.");
+                alert("Order Confirmed!");
                 setView('home');
             };
 
@@ -53,66 +46,44 @@
                 <div className="min-h-screen">
                     {/* Navbar */}
                     <nav className="p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-black/90 backdrop-blur-md z-50">
-                        <div onClick={() => setView('home')} className="cursor-pointer">
-                            <img src="logo.png" alt="ZENVYGO" className="h-8 md:h-10 onError={(e) => e.target.style.display='none'}" />
-                            <h1 className="text-2xl font-black italic tracking-tighter">ZENVYGO</h1>
+                        <div onClick={() => setView('home')} className="cursor-pointer flex items-center gap-2">
+                            <img src="logo.png" alt="ZENVYGO" className="h-10 logo-bright" />
                         </div>
                         <button onClick={() => setView('admin')} className="text-[9px] tracking-widest border border-white/20 px-3 py-1 uppercase">Admin</button>
                     </nav>
 
                     {view === 'admin' ? (
-                        <div className="p-6 md:p-12 max-w-5xl mx-auto">
-                            <h2 className="text-4xl font-black mb-10 italic">BACKEND ORDERS</h2>
-                            <div className="bg-white/5 rounded-lg overflow-hidden">
-                                <table className="w-full text-left text-sm">
-                                    <thead class="bg-white/10 text-[10px] uppercase tracking-widest">
-                                        <tr>
-                                            <th className="p-4">ID</th>
-                                            <th className="p-4">Product</th>
-                                            <th className="p-4">Date</th>
-                                            <th className="p-4">Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {orders.map(o => (
-                                            <tr key={o.id} className="border-b border-white/5">
-                                                <td className="p-4 text-gray-500">{o.id}</td>
-                                                <td className="p-4 font-bold">{o.name}</td>
-                                                <td className="p-4 text-xs text-gray-400">{o.date}</td>
-                                                <td className="p-4">{o.price} BDT</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                        <div className="p-10 max-w-5xl mx-auto">
+                            <h2 className="text-4xl font-black mb-10 italic">ORDERS</h2>
+                            <div className="space-y-4">
+                                {orders.length === 0 ? <p className="opacity-30">No orders yet.</p> : 
+                                    orders.map(o => (
+                                        <div key={o.id} className="p-4 border border-white/10 flex justify-between">
+                                            <div><p className="font-bold">{o.name}</p><p className="text-xs text-gray-500">{o.date}</p></div>
+                                            <p className="font-bold">{o.price} BDT</p>
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
                     ) : (
                         <div>
-                            {/* Hero */}
-                            <div className="py-20 text-center px-6">
-                                <h2 className="text-6xl md:text-9xl font-black tracking-tighter italic mb-4">ZEN-VYGO</h2>
+                            <div className="py-20 text-center">
+                                <h2 className="text-6xl md:text-9xl font-black italic tracking-tighter mb-4">ZEN-VYGO</h2>
                                 <p className="text-gray-500 uppercase tracking-[0.4em] text-xs">shop smart, live fast</p>
                             </div>
-
-                            {/* Products */}
-                            <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-10 pb-20">
+                            <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-10">
                                 {products.map(p => (
-                                    <div key={p.id} className="group">
-                                        <div className="aspect-[4/5] bg-white/5 overflow-hidden mb-4">
-                                            <img src={p.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700" />
-                                        </div>
-                                        <h3 className="font-bold uppercase tracking-widest text-sm">{p.name}</h3>
+                                    <div key={p.id}>
+                                        <img src={p.img} className="w-full grayscale hover:grayscale-0 transition duration-700 mb-4" />
+                                        <h3 className="font-bold uppercase text-sm tracking-widest">{p.name}</h3>
                                         <p className="text-gray-500 text-xs mb-4">BDT {p.price}</p>
-                                        <button onClick={() => placeOrder(p)} className="w-full bg-white text-black py-3 font-black uppercase text-[10px] tracking-widest hover:invert transition">Confirm Order</button>
+                                        <button onClick={() => placeOrder(p)} className="w-full bg-white text-black py-3 font-black uppercase text-[10px] tracking-widest hover:invert">Confirm Order</button>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
-                    
-                    <footer className="p-20 text-center border-t border-white/5 opacity-30">
-                        <p className="text-[10px] tracking-[0.5em] uppercase">Zenvygobdofficial@gmail.com</p>
-                    </footer>
                 </div>
             );
         }
